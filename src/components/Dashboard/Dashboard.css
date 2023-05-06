@@ -35,3 +35,10 @@
   text-decoration: none;
   text-align: center;
 }
+
+.chart-container {
+  position: relative;
+  height: 40vh;
+  width: 80vw;
+  margin: 20px auto;
+}
