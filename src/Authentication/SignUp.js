@@ -25,3 +25,15 @@ const SignUp = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button type="submit">Sign Up</button>
+    </form>
+  );
+};
+
+export default SignUp;
