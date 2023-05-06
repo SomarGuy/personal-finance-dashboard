@@ -6,7 +6,6 @@ import './Dashboard.css';
 import { Link } from 'react-router-dom';
 import Transactions from '../Transactions/Transactions';
 
-
 const Dashboard = () => {
   const [data, setData] = useState([]);
 
@@ -50,6 +49,7 @@ const Dashboard = () => {
         </div>
       </div>
       <Link className="view-transactions-link" to="/transactions">View Transactions</Link>
+      <Link className="view-investments-link" to="/investments">View Investments</Link>
     </div>
   );
 };

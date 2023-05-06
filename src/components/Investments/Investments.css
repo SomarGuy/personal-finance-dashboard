@@ -1,0 +1,36 @@
+.investments {
+  width: 80%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.stock-data {
+  background-color: #f1f1f1;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.stock-data p {
+  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.stock-data p:last-child {
+  margin-bottom: 0;
+}

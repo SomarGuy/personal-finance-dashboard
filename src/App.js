@@ -5,7 +5,7 @@ import SignIn from './components/Authentication/SignIn';
 import SignUp from './components/Authentication/SignUp';
 import Dashboard from './components/Dashboard/Dashboard';
 import Transactions from './components/Transactions/Transactions';
-
+import Investments from './components/Investments/Investments';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -24,6 +24,7 @@ const App = () => {
         <Route path="/signup" component={SignUp} />
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/transactions" component={Transactions} />
+        <PrivateRoute path="/investments" component={Investments} />
         <Redirect from="/" to="/dashboard" />
       </Switch>
     </Router>
