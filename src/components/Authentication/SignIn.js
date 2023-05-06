@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useHistory } from 'react-router-dom';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await auth.signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       setEmail('');
       setPassword('');
+      history.push('/dashboard');
     } catch (error) {
       console.error('Error signing in:', error);
     }
