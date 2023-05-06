@@ -1,92 +1,50 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { auth } from '../../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
-import {
-  Chart,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  LineController,
-} from 'chart.js';
+import React, { useEffect, useRef } from 'react';
+import { Chart, BarController, BarElement, PointElement, LinearScale, CategoryScale, TimeScale, Filler } from 'chart.js';
 
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  LineController
-);
-
+// Register the necessary elements, scales, and controllers
+Chart.register(BarController, BarElement, PointElement, LinearScale, CategoryScale, TimeScale, Filler);
 
 const Charts = () => {
-  const [data, setData] = useState([]);
-  const [chartData, setChartData] = useState({});
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
-      const q = query(collection(db, 'data'), where('userId', '==', user.uid));
-      const querySnapshot = await getDocs(q);
-      const newData = [];
-      querySnapshot.forEach((doc) => {
-        newData.push({ id: doc.id, ...doc.data(), date: '2023-05-01' }); // Add placeholder date
+    if (chartRef.current) {
+      const ctx = chartRef.current.getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [
+            {
+              label: '2022',
+              data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+              backgroundColor: 'rgb(75, 192, 192)',
+            },
+          ],
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'category',
+            },
+            y: {
+              type: 'linear',
+            },
+          },
+        },
       });
-      console.log('Fetched Data:', newData);
-      setData(newData);
-    };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (!data || !chartRef || !chartRef.current) return;
-  
-    const chartData = {
-      labels: data.map((item) => item.date) || [],
-      datasets: [
-        {
-          label: 'Income',
-          data: data.map((item) => item.income) || [],
-          borderColor: 'rgba(75, 192, 192, 1)',
-          fill: false,
-        },
-        {
-          label: 'Expenses',
-          data: data.map((item) => item.expenses) || [],
-          borderColor: 'rgba(255, 99, 132, 1)',
-          fill: false,
-        },
-      ],
-    };
-
-    console.log('Chart Data:', chartData);
-  
-    const chartInstance = new Chart(chartRef.current, {
-      type: 'line',
-      data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      },
-    });
-  
-    return () => {
-      chartInstance.destroy();
-    };
-  }, [data, chartRef]);
-
-  
+      return () => {
+        chart.destroy();
+      };
+    }
+  }, [chartRef]);
 
   return (
     <div>
-      <h2>Charts</h2>
-      <div style={{ position: 'relative', height: '40vh', width: '80vw' }}>
-        <canvas ref={chartRef} />
-      </div>
+      <canvas ref={chartRef} width="400" height="200"></canvas>
     </div>
-  )};
+  );
+};
 
 export default Charts;

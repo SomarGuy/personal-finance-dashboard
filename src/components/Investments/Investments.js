@@ -1,53 +1,147 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './Investments.css';
+import { auth, db } from '../../firebase';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Box,
+  Link,
+} from '@mui/material';
 
 const Investments = () => {
-  const [stockData, setStockData] = useState(null);
-  const [symbol, setSymbol] = useState('MSFT'); // Default symbol
-
-  const apiKey = 'YOUR_API_KEY'; // Replace with your Alpha Vantage API key
+  const [investments, setInvestments] = useState([]);
+  const [input, setInput] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState('');
 
   useEffect(() => {
-    const fetchStockData = async () => {
-      try {
-        const response = await axios.get(
-          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`
-        );
-        setStockData(response.data['Global Quote']);
-      } catch (error) {
-        console.error('Error fetching stock data:', error);
-      }
-    };
+    const user = auth.currentUser;
+    if (user) {
+      const q = query(
+        collection(db, 'investments'),
+        where('userId', '==', user.uid)
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const newData = [];
+        querySnapshot.forEach((doc) => {
+          newData.push({ id: doc.id, ...doc.data() });
+        });
+        setInvestments(newData);
+      });
 
-    fetchStockData();
-  }, [symbol]);
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (editMode) {
+      await updateDoc(doc(db, 'investments', editId), {
+        description: input,
+      });
+      setInput('');
+      setEditMode(false);
+    } else {
+      const user = auth.currentUser;
+      await addDoc(collection(db, 'investments'), {
+        userId: user.uid,
+        description: input,
+      });
+      setInput('');
+    }
+  };
+
+  const handleEdit = (investment) => {
+    setInput(investment.description);
+    setEditMode(true);
+    setEditId(investment.id);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, 'investments', id));
+  };
 
   return (
-    <div className="investments">
-      <h2>Investments</h2>
-      <input
-        type="text"
-        placeholder="Enter stock symbol"
-        value={symbol}
-        onChange={(e) => setSymbol(e.target.value)}
-      />
-      {stockData && (
-        <div className="stock-data">
-          <p>Symbol: {stockData['01. symbol']}</p>
-          <p>Open: ${stockData['02. open']}</p>
-          <p>High: ${stockData['03. high']}</p>
-          <p>Low: ${stockData['04. low']}</p>
-          <p>Price: ${stockData['05. price']}</p>
-          <p>Volume: {stockData['06. volume']}</p>
-          <p>Latest trading day: {stockData['07. latest trading day']}</p>
-          <p>Previous close: ${stockData['08. previous close']}</p>
-          <p>Change: ${stockData['09. change']}</p>
-          <p>Change percent: {stockData['10. change percent']}</p>
-        </div>
-      )}
-    </div>
+    <Container maxWidth="md">
+      <Typography variant="h4" align="center" gutterBottom>
+        Investments
+      </Typography>
+
+      <Box
+        component="form"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px',
+        }}
+        onSubmit={handleSubmit}
+      >
+        <TextField
+          fullWidth
+          variant="outlined"
+          label="Investment"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          sx={{ marginRight: '10px' }}
+        />
+        <Button type="submit" variant="contained" color="primary">
+          Add
+        </Button>
+      </Box>
+
+      <List>
+        {investments.map((item) => (
+          <ListItem
+            key={item.id}
+            sx={{
+              backgroundColor: '#f1f1f1',
+              marginBottom: '5px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '10px',
+            }}
+          >
+            <ListItemText primary={item.description} />
+          </ListItem>
+        ))}
+      </List>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Link
+          href="/view-investments"
+          variant="contained"
+          color="primary"
+          sx={{
+            padding: '10px 20px',
+            margin: '20px 0',
+            textDecoration: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          View Investments
+        </Link>
+      </Box>
+    </Container>
   );
 };
 
 export default Investments;
+

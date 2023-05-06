@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth } from '../../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
-import './Dashboard.css';
+import { Box, Container, Grid, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Transactions from '../Transactions/Transactions';
 import Charts from '../Charts/Charts';
@@ -21,6 +21,7 @@ const Dashboard = () => {
       },
     ],
   };
+
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
@@ -44,28 +45,66 @@ const Dashboard = () => {
   const investments = data.reduce((acc, item) => acc + item.investments, 0);
 
   return (
-    <div className="dashboard">
-      <h2>Dashboard</h2>
-      <div className="summary">
-        <div className="summary-item">
-          <h3>Income</h3>
-          <p>${income.toFixed(2)}</p>
-        </div>
-        <div className="summary-item">
-          <h3>Expenses</h3>
-          <p>${expenses.toFixed(2)}</p>
-        </div>
-        <div className="summary-item">
-          <h3>Investments</h3>
-          <p>${investments.toFixed(2)}</p>
-        </div>
-      </div>
-      <Link className="view-transactions-link" to="/transactions">View Transactions</Link>
-      <Link className="view-investments-link" to="/investments">View Investments</Link>
+    <Container>
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Dashboard
+        </Typography>
+      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
+          <Box
+            sx={{
+              backgroundColor: '#f1f1f1',
+              padding: 2,
+              borderRadius: 1,
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="h6">Income</Typography>
+            <Typography variant="h5">${income.toFixed(2)}</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Box
+            sx={{
+              backgroundColor: '#f1f1f1',
+              padding: 2,
+              borderRadius: 1,
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="h6">Expenses</Typography>
+            <Typography variant="h5">${expenses.toFixed(2)}</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Box
+            sx={{
+              backgroundColor: '#f1f1f1',
+              padding: 2,
+              borderRadius: 1,
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="h6">Investments</Typography>
+            <Typography variant="h5">${investments.toFixed(2)}</Typography>
+          </Box>
+        </Grid>
+      </Grid>
+      <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 4 }}>
+        <Link to="/transactions" style={{ textDecoration: 'none' }}>
+          View Transactions
+        </Link>
+        <Link to="/investments" style={{ textDecoration: 'none' }}>
+          View Investments
+        </Link>
+      </Box>
       <Transactions />
       <Charts data={sampleData} />
-    </div>
+    </Container>
   );
 };
 
 export default Dashboard;
+
