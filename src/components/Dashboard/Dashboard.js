@@ -3,6 +3,9 @@ import { auth } from '../../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import './Dashboard.css';
+import { Link } from 'react-router-dom';
+import Transactions from '../Transactions/Transactions';
+
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
@@ -46,6 +49,7 @@ const Dashboard = () => {
           <p>${investments.toFixed(2)}</p>
         </div>
       </div>
+      <Link className="view-transactions-link" to="/transactions">View Transactions</Link>
     </div>
   );
 };

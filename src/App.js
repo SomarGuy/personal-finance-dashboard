@@ -4,6 +4,8 @@ import { auth } from './firebase';
 import SignIn from './components/Authentication/SignIn';
 import SignUp from './components/Authentication/SignUp';
 import Dashboard from './components/Dashboard/Dashboard';
+import Transactions from './components/Transactions/Transactions';
+
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -21,6 +23,7 @@ const App = () => {
         <Route path="/signin" component={SignIn} />
         <Route path="/signup" component={SignUp} />
         <PrivateRoute path="/dashboard" component={Dashboard} />
+        <PrivateRoute path="/transactions" component={Transactions} />
         <Redirect from="/" to="/dashboard" />
       </Switch>
     </Router>
