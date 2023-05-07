@@ -16,8 +16,8 @@ const Charts = () => {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
           datasets: [
             {
-              label: '2022',
-              data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+              label: 'Stock Price',
+              data: [150, 180, 170, 190, 210, 230, 220, 240, 260, 280, 270, 290],
               backgroundColor: 'rgb(75, 192, 192)',
             },
           ],
