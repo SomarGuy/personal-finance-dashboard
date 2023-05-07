@@ -1,82 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../../firebase';
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
+import axios from 'axios';
 import {
   Container,
   Typography,
   TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
   Box,
-  Link,
 } from '@mui/material';
 
 const Investments = () => {
-  const [investments, setInvestments] = useState([]);
-  const [input, setInput] = useState('');
-  const [editMode, setEditMode] = useState(false);
-  const [editId, setEditId] = useState('');
+  const [symbol, setSymbol] = useState('');
+  const [stockData, setStockData] = useState(null);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setSymbol(e.target.value);
+  };
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      const q = query(
-        collection(db, 'investments'),
-        where('userId', '==', user.uid)
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const newData = [];
-        querySnapshot.forEach((doc) => {
-          newData.push({ id: doc.id, ...doc.data() });
-        });
-        setInvestments(newData);
-      });
-
-      return () => {
-        unsubscribe();
-      };
-    }
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (editMode) {
-      await updateDoc(doc(db, 'investments', editId), {
-        description: input,
-      });
-      setInput('');
-      setEditMode(false);
-    } else {
-      const user = auth.currentUser;
-      await addDoc(collection(db, 'investments'), {
-        userId: user.uid,
-        description: input,
-      });
-      setInput('');
-    }
-  };
-
-  const handleEdit = (investment) => {
-    setInput(investment.description);
-    setEditMode(true);
-    setEditId(investment.id);
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(db, 'investments', id));
-  };
+    const fetchStockData = async () => {
+      if (symbol) {
+        try {
+          const response = await axios.get(
+            `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=67HFUEPTDSR2639Y`
+          );
+          if (response.data['Error Message']) {
+            setError('Invalid symbol. Please try again.');
+            setStockData(null);
+          } else {
+            setError('');
+            setStockData(response.data['Global Quote']);
+          }
+        } catch (error) {
+          setError('Error fetching stock data. Please try again.');
+          setStockData(null);
+        }
+      }
+    };
+    const timer = setTimeout(fetchStockData, 500);
+    return () => clearTimeout(timer);
+  }, [symbol]);
 
   return (
     <Container maxWidth="md">
@@ -85,63 +47,33 @@ const Investments = () => {
       </Typography>
 
       <Box
-        component="form"
         sx={{
           display: 'flex',
           justifyContent: 'center',
           marginBottom: '20px',
         }}
-        onSubmit={handleSubmit}
       >
         <TextField
           fullWidth
           variant="outlined"
-          label="Investment"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          label="Enter stock symbol (e.g., MSFT, AAPL)"
+          value={symbol}
+          onChange={handleChange}
           sx={{ marginRight: '10px' }}
         />
-        <Button type="submit" variant="contained" color="primary">
-          Add
-        </Button>
       </Box>
 
-      <List>
-        {investments.map((item) => (
-          <ListItem
-            key={item.id}
-            sx={{
-              backgroundColor: '#f1f1f1',
-              marginBottom: '5px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '10px',
-            }}
-          >
-            <ListItemText primary={item.description} />
-          </ListItem>
-        ))}
-      </List>
+      {error && <p>{error}</p>}
+      {stockData && (
+        <div>
+          <h2>Stock Data:</h2>
+          <pre>{JSON.stringify(stockData, null, 2)}</pre>
+        </div>
+      )}
 
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Link
-          href="/view-investments"
-          variant="contained"
-          color="primary"
-          sx={{
-            padding: '10px 20px',
-            margin: '20px 0',
-            textDecoration: 'none',
-            borderRadius: '4px',
-          }}
-        >
-          View Investments
-        </Link>
-      </Box>
+      {/* Your existing investments list and related components can stay unchanged */}
     </Container>
   );
 };
 
 export default Investments;
-
