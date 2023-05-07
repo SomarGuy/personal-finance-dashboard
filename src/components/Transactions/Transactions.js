@@ -19,7 +19,6 @@ import {
   ListItem,
   ListItemText,
   Box,
-  Link,
 } from '@mui/material';
 
 const Transactions = () => {
@@ -102,7 +101,7 @@ const Transactions = () => {
           sx={{ marginRight: '10px' }}
         />
         <Button type="submit" variant="contained" color="primary">
-          Add
+          {editMode ? 'Update' : 'Add'}
         </Button>
       </Box>
 
@@ -120,28 +119,28 @@ const Transactions = () => {
             }}
           >
             <ListItemText primary={item.description} />
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleEdit(item)}
+                sx={{ marginRight: '10px' }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleDelete(item.id)}
+              >
+                Delete
+              </Button>
+            </div>
           </ListItem>
         ))}
       </List>
-
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Link
-          href="/view-transactions"
-          variant="contained"
-          color="primary"
-          sx={{
-            padding: '10px 20px',
-            margin: '20px 0',
-            textDecoration: 'none',
-            borderRadius: '4px',
-          }}
-        >
-          View Transactions
-        </Link>
-      </Box>
     </Container>
   );
 };
 
 export default Transactions;
-
