@@ -2,7 +2,7 @@
 
 A simple personal finance tracker web application built using React.js, Firebase, and Material-UI.
 
-![Dashboard](./public/images/dashboard.png)
+![Dashboard](./public/images/Dashboard.png)
 
 ## Features
 
@@ -12,7 +12,7 @@ A simple personal finance tracker web application built using React.js, Firebase
 - User authentication and registration
 - Responsive design
 
-![Transactions](./public/images/transactions.png)
+![Transactions](./public/images/Transactions.png)
 
 # Technologies
 
@@ -62,7 +62,7 @@ npm start
 
 7. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
-![Investments](./public/images/investments.png)
+![Investments](./public/images/Investments.png)
 
 ## Contributing
 
